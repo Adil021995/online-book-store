@@ -1,0 +1,7 @@
+<?php
+require_once __DIR__ . '/config/config.php';require_login();
+$s=$pdo->prepare("SELECT * FROM orders WHERE user_id=? ORDER BY id DESC");$s->execute([$_SESSION['user_id']]);$orders=$s->fetchAll();
+$pageTitle='My orders — OnlineBookStore';include __DIR__.'/includes/header.php';
+?>
+<main class="container section"><div class="page-heading"><span class="eyebrow">YOUR BOOK JOURNEY</span><h1>My <span class="gradient-text">orders.</span></h1><p>Check order status and follow your delivery.</p></div><?php if(!$orders): ?><div class="empty-state"><h2>No orders yet.</h2><p>Your next favourite book is waiting.</p><a class="btn btn-primary" href="index.php#books">Explore books</a></div><?php else: ?><div class="orders-list"><?php foreach($orders as $o): ?><article class="order-card"><div class="order-card-top"><div><small>ORDER NUMBER</small><h3><?= e($o['order_number']) ?></h3><span class="muted"><?= e(date('d M Y, h:i A',strtotime($o['created_at']))) ?></span></div><span class="status-pill"><?= e($o['status']) ?></span></div><div class="order-card-bottom"><strong><?= money($o['total']) ?></strong><span>Payment: <?= e(strtoupper($o['payment_method'])) ?> · <?= e($o['payment_status']) ?></span><a class="text-link" href="track-order.php?order=<?= urlencode($o['order_number']) ?>">Track order →</a></div></article><?php endforeach; ?></div><?php endif; ?></main>
+<?php include __DIR__.'/includes/footer.php'; ?>
